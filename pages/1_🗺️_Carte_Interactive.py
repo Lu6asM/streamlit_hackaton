@@ -15,6 +15,16 @@ st.markdown("Visualisez les stations météorologiques de Loire-Atlantique et le
 df = charger_donnees()
 stations = get_stations(df)
 
+# Zones de focus prédéfinies
+ZONES = {
+    "Loire-Atlantique (tout)": {"lat": 47.25, "lon": -1.6, "zoom": 8},
+    "Nantes Métropole": {"lat": 47.22, "lon": -1.55, "zoom": 11},
+    "Saint-Nazaire / Estuaire": {"lat": 47.28, "lon": -2.2, "zoom": 11},
+    "Nord du département": {"lat": 47.5, "lon": -1.4, "zoom": 10},
+    "Littoral / Côte": {"lat": 47.15, "lon": -2.1, "zoom": 10},
+    "Sud-Est / Vignoble": {"lat": 47.1, "lon": -1.3, "zoom": 10},
+}
+
 # --- Sidebar : filtres ---
 st.sidebar.header("Filtres")
 
@@ -33,17 +43,21 @@ plage_annees = st.sidebar.slider(
     value=(2000, annee_max),
 )
 
+zone_choisie = st.sidebar.selectbox("Zoom sur une zone", options=list(ZONES.keys()))
+
 # --- Calcul des données par station pour la période ---
 df_filtre = df[(df["annee"] >= plage_annees[0]) & (df["annee"] <= plage_annees[1])]
 
 stations_data = df_filtre.groupby("station").agg(
-    LAT=("latitude", "first"),
-    LON=("longitude", "first"),
+    latitude=("latitude", "first"),
+    longitude=("longitude", "first"),
     valeur=(indicateur_choisi, "mean"),
     nb_mesures=("date", "count"),
 ).reset_index().dropna(subset=["valeur", "latitude", "longitude"])
 
 # --- Carte Plotly ---
+zone = ZONES[zone_choisie]
+
 fig = px.scatter_mapbox(
     stations_data,
     lat="latitude",
@@ -55,8 +69,8 @@ fig = px.scatter_mapbox(
     hover_data={"valeur": ":.2f", "nb_mesures": True, "latitude": ":.4f", "longitude": ":.4f"},
     color_continuous_scale="RdYlBu_r" if "temp" in indicateur_choisi else "Blues",
     mapbox_style="open-street-map",
-    zoom=8,
-    center={"lat": 47.2, "lon": -1.6},
+    zoom=zone["zoom"],
+    center={"lat": zone["lat"], "lon": zone["lon"]},
     title=f"{INDICATEURS[indicateur_choisi]['nom']} — Moyenne {plage_annees[0]}-{plage_annees[1]}",
     labels={"valeur": INDICATEURS[indicateur_choisi]["unite"]},
 )
