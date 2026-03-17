@@ -63,7 +63,7 @@ with nav1:
     st.page_link("pages/1_🗺️_Carte_Interactive.py", label="Carte Interactive", icon="🗺️")
     st.page_link("pages/2_📊_Historique.py", label="Visualisations Historiques", icon="📊")
 with nav2:
-    st.page_link("pages/3_🔮_Predictions.py", label="Prédictions IA", icon="🤖")
+    st.page_link("pages/3_🔮_Predictions.py", label="Prédictions IA", icon="🔮")
     st.page_link("pages/4_💡_Preconisations.py", label="Préconisations", icon="💡")
 with nav3:
     st.page_link("pages/5_🔗_Correlations.py", label="Corrélations", icon="🔗")
