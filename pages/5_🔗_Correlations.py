@@ -19,7 +19,7 @@ df = charger_donnees()
 # --- Sidebar ---
 st.sidebar.header("Filtres")
 
-stations_list = ["Toutes les stations"] + sorted(df["NOM_USUEL"].unique().tolist())
+stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
 station_choisie = st.sidebar.selectbox("Station", stations_list, key="corr_station")
 
 annee_min = int(df["annee"].min())
@@ -29,7 +29,7 @@ plage = st.sidebar.slider("Période", annee_min, annee_max, (1950, annee_max), k
 # Filtrage
 data = df.copy()
 if station_choisie != "Toutes les stations":
-    data = data[data["NOM_USUEL"] == station_choisie]
+    data = data[data["station"] == station_choisie]
 data = data[(data["annee"] >= plage[0]) & (data["annee"] <= plage[1])]
 
 cols_indicateurs = [c for c in INDICATEURS.keys() if c in data.columns]
@@ -119,7 +119,7 @@ with tab_stations:
     ind_comp = st.selectbox("Indicateur", options=cols_indicateurs,
                             format_func=lambda x: INDICATEURS[x]["nom"], key="comp_ind")
 
-    all_stations = sorted(df["NOM_USUEL"].unique().tolist())
+    all_stations = sorted(df["station"].unique().tolist())
     stations_choisies = st.multiselect(
         "Stations à comparer (max 4)",
         options=all_stations,
@@ -132,7 +132,7 @@ with tab_stations:
 
         colors = ["#FF6B35", "#3B82F6", "#10B981", "#F59E0B"]
         for i, station in enumerate(stations_choisies):
-            data_st = df[(df["NOM_USUEL"] == station) &
+            data_st = df[(df["station"] == station) &
                          (df["annee"] >= plage[0]) & (df["annee"] <= plage[1])]
             moy_st = data_st.groupby("annee")[ind_comp].mean().reset_index().dropna()
 

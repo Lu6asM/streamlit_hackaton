@@ -61,20 +61,20 @@ c1, c2, c3, c4 = st.columns(4)
 annees_recentes = df[df["annee"] >= 2010]
 annees_anciennes = df[(df["annee"] >= 1950) & (df["annee"] < 1980)]
 
-tm_recent = annees_recentes["TM"].mean()
-tm_ancien = annees_anciennes["TM"].mean()
+tm_recent = annees_recentes["temp_moyenne"].mean()
+tm_ancien = annees_anciennes["temp_moyenne"].mean()
 delta_tm = tm_recent - tm_ancien if tm_ancien and tm_recent else 0
 
-gel_recent = annees_recentes["NBJGELEE"].mean()
-gel_ancien = annees_anciennes["NBJGELEE"].mean()
+gel_recent = annees_recentes["jours_gel"].mean()
+gel_ancien = annees_anciennes["jours_gel"].mean()
 delta_gel = gel_recent - gel_ancien if gel_ancien and gel_recent else 0
 
-canicule_recent = annees_recentes["NBJTX30"].mean()
-canicule_ancien = annees_anciennes["NBJTX30"].mean()
+canicule_recent = annees_recentes["jours_chaleur_30"].mean()
+canicule_ancien = annees_anciennes["jours_chaleur_30"].mean()
 delta_canicule = canicule_recent - canicule_ancien if canicule_ancien and canicule_recent else 0
 
-rr_recent = annees_recentes["RR"].mean()
-rr_ancien = annees_anciennes["RR"].mean()
+rr_recent = annees_recentes["precipitations"].mean()
+rr_ancien = annees_anciennes["precipitations"].mean()
 delta_rr = rr_recent - rr_ancien if rr_ancien and rr_recent else 0
 
 with c1:

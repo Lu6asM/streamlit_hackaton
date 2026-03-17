@@ -29,13 +29,13 @@ EVENEMENTS = {
 # --- Sidebar : filtres ---
 st.sidebar.header("Filtres")
 
-stations_list = ["Toutes les stations"] + sorted(df["NOM_USUEL"].unique().tolist())
+stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
 station_choisie = st.sidebar.selectbox("Station", stations_list)
 
 indicateurs_choisis = st.sidebar.multiselect(
     "Indicateurs à afficher",
     options=list(INDICATEURS.keys()),
-    default=["TM", "RR", "NBJGELEE", "NBJTX30"],
+    default=["temp_moyenne", "precipitations", "jours_gel", "jours_chaleur_30"],
     format_func=lambda x: INDICATEURS[x]["nom"],
 )
 
@@ -143,7 +143,7 @@ with tab_heatmap:
 
     data_hm = df.copy()
     if station_choisie != "Toutes les stations":
-        data_hm = data_hm[data_hm["NOM_USUEL"] == station_choisie]
+        data_hm = data_hm[data_hm["station"] == station_choisie]
 
     data_hm = data_hm[(data_hm["annee"] >= plage[0]) & (data_hm["annee"] <= plage[1])]
 
@@ -156,7 +156,7 @@ with tab_heatmap:
         z=pivot_table.values,
         x=pivot_table.columns,
         y=mois_labels[:len(pivot_table.index)],
-        colorscale="RdYlBu_r" if "T" in ind_heatmap else "Blues",
+        colorscale="RdYlBu_r" if "temp" in ind_heatmap else "Blues",
         colorbar_title=INDICATEURS[ind_heatmap]["unite"],
         hoverongaps=False,
     ))
@@ -177,13 +177,13 @@ with tab_stripes:
     """)
 
     ind_stripes = st.selectbox(
-        "Indicateur", options=["TM", "TX", "TN"],
+        "Indicateur", options=["temp_moyenne", "temp_max", "temp_min"],
         format_func=lambda x: INDICATEURS[x]["nom"], key="stripes_ind",
     )
 
     data_s = df.copy()
     if station_choisie != "Toutes les stations":
-        data_s = data_s[data_s["NOM_USUEL"] == station_choisie]
+        data_s = data_s[data_s["station"] == station_choisie]
 
     moy_annuelle = data_s.groupby("annee")[ind_stripes].mean().reset_index()
     moy_annuelle = moy_annuelle.dropna()
@@ -246,7 +246,7 @@ with tab_comparaison:
         for ind in indicateurs_choisis:
             data = df.copy()
             if station_choisie != "Toutes les stations":
-                data = data[data["NOM_USUEL"] == station_choisie]
+                data = data[data["station"] == station_choisie]
 
             moy1 = data[(data["annee"] >= periode1[0]) & (data["annee"] <= periode1[1])][ind].mean()
             moy2 = data[(data["annee"] >= periode2[0]) & (data["annee"] <= periode2[1])][ind].mean()

@@ -36,23 +36,24 @@ plage_annees = st.sidebar.slider(
 # --- Calcul des données par station pour la période ---
 df_filtre = df[(df["annee"] >= plage_annees[0]) & (df["annee"] <= plage_annees[1])]
 
-stations_data = df_filtre.groupby("NOM_USUEL").agg(
-    LAT=("LAT", "first"),
-    LON=("LON", "first"),
+stations_data = df_filtre.groupby("station").agg(
+    LAT=("latitude", "first"),
+    LON=("longitude", "first"),
     valeur=(indicateur_choisi, "mean"),
     nb_mesures=("date", "count"),
-).reset_index().dropna(subset=["valeur", "LAT", "LON"])
+).reset_index().dropna(subset=["valeur", "latitude", "longitude"])
 
 # --- Carte Plotly ---
 fig = px.scatter_mapbox(
     stations_data,
-    lat="LAT",
-    lon="LON",
+    lat="latitude",
+    lon="longitude",
+    size_max=15,
     color="valeur",
     size="nb_mesures",
-    hover_name="NOM_USUEL",
-    hover_data={"valeur": ":.2f", "nb_mesures": True, "LAT": ":.4f", "LON": ":.4f"},
-    color_continuous_scale="RdYlBu_r" if "T" in indicateur_choisi else "Blues",
+    hover_name="station",
+    hover_data={"valeur": ":.2f", "nb_mesures": True, "latitude": ":.4f", "longitude": ":.4f"},
+    color_continuous_scale="RdYlBu_r" if "temp" in indicateur_choisi else "Blues",
     mapbox_style="open-street-map",
     zoom=8,
     center={"lat": 47.2, "lon": -1.6},
@@ -65,7 +66,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 # --- Tableau récapitulatif ---
 st.markdown("### Détail par station")
-stations_display = stations_data[["NOM_USUEL", "valeur", "nb_mesures", "LAT", "LON"]].copy()
+stations_display = stations_data[["station", "valeur", "nb_mesures", "latitude", "longitude"]].copy()
 stations_display.columns = ["Station", f"{INDICATEURS[indicateur_choisi]['nom']}", "Nb mesures", "Latitude", "Longitude"]
 stations_display = stations_display.sort_values(by=stations_display.columns[1], ascending=False)
 st.dataframe(stations_display, use_container_width=True, hide_index=True)

@@ -27,7 +27,7 @@ indicateur_choisi = st.sidebar.selectbox(
 
 horizon = st.sidebar.selectbox("Horizon", options=[2030, 2050, 2100], index=1)
 
-stations_list = ["Toutes les stations"] + sorted(df["NOM_USUEL"].unique().tolist())
+stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
 station_choisie = st.sidebar.selectbox("Station", stations_list)
 
 modeles_actifs = st.sidebar.multiselect(
