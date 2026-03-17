@@ -10,56 +10,24 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+from utils.footer import afficher_footer
+
 # ============================================================
 # PAGE D'ACCUEIL
 # ============================================================
-st.title("🌍 Observatoire du Changement Climatique")
-st.subheader("Loire-Atlantique (44) — 1900 à 2026")
-
-st.markdown("---")
-
-st.markdown("""
-### Bienvenue sur le dashboard interactif
-
-Ce tableau de bord analyse **126 ans de données météorologiques** sur le département
-de la Loire-Atlantique pour comprendre et anticiper les effets du changement climatique.
-
-**Naviguez via le menu latéral** pour accéder aux différentes sections :
-""")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("""
-    🗺️ **Carte Interactive**
-    Explorez les stations météo et leurs données géolocalisées.
-
-    📊 **Visualisations Historiques**
-    Analysez l'évolution des 8 indicateurs climatiques depuis 1900.
-    """)
-
-with col2:
-    st.markdown("""
-    🤖 **Prédictions IA (Prophet)**
-    Projections climatiques pour 2030, 2050 et 2100.
-
-    💡 **Préconisations Citoyennes**
-    Recommandations adaptées au territoire basées sur les projections.
-    """)
-
-st.markdown("---")
+st.markdown("# 🌍 Observatoire du Changement Climatique")
+st.markdown("### Loire-Atlantique (44) — Données Météo-France de 1900 à 2026")
 
 # KPI rapides
 from utils.data_loader import charger_donnees, INDICATEURS
 df = charger_donnees()
 
-st.markdown("### Aperçu rapide")
+st.markdown("### 📊 Aperçu rapide — Évolution entre 1950-1980 et 2010-2026")
 
-c1, c2, c3, c4 = st.columns(4)
-
-# Calcul des KPI
 annees_recentes = df[df["annee"] >= 2010]
 annees_anciennes = df[(df["annee"] >= 1950) & (df["annee"] < 1980)]
+
+c1, c2, c3, c4 = st.columns(4)
 
 tm_recent = annees_recentes["temp_moyenne"].mean()
 tm_ancien = annees_anciennes["temp_moyenne"].mean()
@@ -78,13 +46,56 @@ rr_ancien = annees_anciennes["precipitations"].mean()
 delta_rr = rr_recent - rr_ancien if rr_ancien and rr_recent else 0
 
 with c1:
-    st.metric("🌡️ Temp. moyenne", f"{tm_recent:.1f}°C", f"{delta_tm:+.1f}°C vs 1950-80")
+    st.metric("🌡️ Temp. moyenne", f"{tm_recent:.1f}°C", f"{delta_tm:+.1f}°C")
 with c2:
-    st.metric("❄️ Jours de gel/mois", f"{gel_recent:.1f}", f"{delta_gel:+.1f} vs 1950-80")
+    st.metric("❄️ Jours de gel/mois", f"{gel_recent:.1f}", f"{delta_gel:+.1f}")
 with c3:
-    st.metric("🔥 Jours >30°C/mois", f"{canicule_recent:.1f}", f"{delta_canicule:+.1f} vs 1950-80")
+    st.metric("🔥 Jours >30°C/mois", f"{canicule_recent:.1f}", f"{delta_canicule:+.1f}")
 with c4:
-    st.metric("🌧️ Précipitations", f"{rr_recent:.0f} mm", f"{delta_rr:+.0f} mm vs 1950-80")
+    st.metric("🌧️ Précipitations", f"{rr_recent:.0f} mm", f"{delta_rr:+.0f} mm")
 
 st.markdown("---")
-st.caption("Hackathon 2026 — Sup de Vinci — Données Météo-France")
+
+# Navigation rapide
+st.markdown("### 🧭 Navigation")
+
+nav1, nav2, nav3 = st.columns(3)
+with nav1:
+    st.page_link("pages/1_🗺️_Carte_Interactive.py", label="Carte Interactive", icon="🗺️")
+    st.page_link("pages/2_📊_Historique.py", label="Visualisations Historiques", icon="📊")
+with nav2:
+    st.page_link("pages/3_🤖_Predictions.py", label="Prédictions IA", icon="🤖")
+    st.page_link("pages/4_💡_Preconisations.py", label="Préconisations", icon="💡")
+with nav3:
+    st.page_link("pages/5_🔗_Correlations.py", label="Corrélations", icon="🔗")
+    st.page_link("pages/6_🔍_Explorer.py", label="Explorer les données", icon="🔍")
+
+st.markdown("---")
+
+col_intro1, col_intro2 = st.columns([2, 1])
+
+with col_intro1:
+    st.markdown("""
+    Ce tableau de bord analyse **126 ans de données météorologiques** sur le département
+    de la Loire-Atlantique pour comprendre et anticiper les effets du changement climatique.
+
+    Il s'appuie sur les données ouvertes de **Météo-France**, couvrant des dizaines de
+    stations réparties sur tout le département, et utilise des modèles d'IA (Prophet, ARIMA)
+    pour projeter l'évolution climatique jusqu'en 2100.
+    """)
+
+with col_intro2:
+    st.markdown("""
+    **8 indicateurs suivis :**
+    - Température moyenne, min, max
+    - Précipitations
+    - Jours de gel
+    - Jours de canicule (>30°C)
+    - Jours d'orage
+    - Évapotranspiration
+    """)
+
+st.markdown("---")
+
+
+afficher_footer()

@@ -7,6 +7,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.data_loader import charger_donnees, get_stations, get_moyennes_annuelles, INDICATEURS
+from utils.footer import afficher_footer
 
 # ============================================================
 # PAGE : VISUALISATIONS HISTORIQUES (améliorée)
@@ -29,8 +30,8 @@ EVENEMENTS = {
 # --- Sidebar : filtres ---
 st.sidebar.header("Filtres")
 
-stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
-station_choisie = st.sidebar.selectbox("Station", stations_list)
+villes_list = ["Toutes les villes"] + sorted(df["ville"].unique().tolist())
+ville_choisie = st.sidebar.selectbox("Ville", villes_list)
 
 indicateurs_choisis = st.sidebar.multiselect(
     "Indicateurs à afficher",
@@ -63,7 +64,7 @@ with tab_courbes:
         st.warning("Sélectionnez au moins un indicateur dans la barre latérale.")
     else:
         for indicateur in indicateurs_choisis:
-            moyennes = get_moyennes_annuelles(df, indicateur, station_choisie)
+            moyennes = get_moyennes_annuelles(df, indicateur, ville_choisie)
             moyennes = moyennes[(moyennes["annee"] >= plage[0]) & (moyennes["annee"] <= plage[1])]
 
             if moyennes.empty:
@@ -121,7 +122,7 @@ with tab_courbes:
                             )
 
             fig.update_layout(
-                title=f"{info['nom']} — {station_choisie} ({plage[0]}-{plage[1]})",
+                title=f"{info['nom']} — {ville_choisie} ({plage[0]}-{plage[1]})",
                 xaxis_title="Année",
                 yaxis_title=f"{info['nom']} ({info['unite']})",
                 height=420, hovermode="x unified", template="plotly_dark",
@@ -142,8 +143,8 @@ with tab_heatmap:
     )
 
     data_hm = df.copy()
-    if station_choisie != "Toutes les stations":
-        data_hm = data_hm[data_hm["station"] == station_choisie]
+    if ville_choisie != "Toutes les villes":
+        data_hm = data_hm[data_hm["ville"] == ville_choisie]
 
     data_hm = data_hm[(data_hm["annee"] >= plage[0]) & (data_hm["annee"] <= plage[1])]
 
@@ -182,8 +183,8 @@ with tab_stripes:
     )
 
     data_s = df.copy()
-    if station_choisie != "Toutes les stations":
-        data_s = data_s[data_s["station"] == station_choisie]
+    if ville_choisie != "Toutes les villes":
+        data_s = data_s[data_s["ville"] == ville_choisie]
 
     moy_annuelle = data_s.groupby("annee")[ind_stripes].mean().reset_index()
     moy_annuelle = moy_annuelle.dropna()
@@ -245,8 +246,8 @@ with tab_comparaison:
         comparaison = []
         for ind in indicateurs_choisis:
             data = df.copy()
-            if station_choisie != "Toutes les stations":
-                data = data[data["station"] == station_choisie]
+            if ville_choisie != "Toutes les villes":
+                data = data[data["ville"] == ville_choisie]
 
             moy1 = data[(data["annee"] >= periode1[0]) & (data["annee"] <= periode1[1])][ind].mean()
             moy2 = data[(data["annee"] >= periode2[0]) & (data["annee"] <= periode2[1])][ind].mean()
@@ -267,3 +268,8 @@ with tab_comparaison:
         # Export CSV
         csv = df_comp.to_csv(index=False).encode("utf-8")
         st.download_button("📥 Exporter en CSV", csv, "comparaison_climatique.csv", "text/csv")
+
+# ============================================================
+# FOOTER ÉQUIPE
+# ============================================================
+afficher_footer()

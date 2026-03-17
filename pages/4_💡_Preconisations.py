@@ -4,6 +4,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.data_loader import charger_donnees, INDICATEURS
+from utils.footer import afficher_footer
 
 # ============================================================
 # PAGE : PRÉCONISATIONS CITOYENNES
@@ -175,3 +176,8 @@ st.markdown("""
 
 st.markdown("---")
 st.caption("Sources : GIEC AR6, PNACC-3, Earth Action Report, Météo-France — Hackathon 2026 Sup de Vinci")
+
+# ============================================================
+# FOOTER ÉQUIPE
+# ============================================================
+afficher_footer()

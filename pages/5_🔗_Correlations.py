@@ -7,6 +7,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.data_loader import charger_donnees, INDICATEURS
+from utils.footer import afficher_footer
 
 # ============================================================
 # PAGE : CORRÉLATIONS ENTRE INDICATEURS
@@ -19,8 +20,8 @@ df = charger_donnees()
 # --- Sidebar ---
 st.sidebar.header("Filtres")
 
-stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
-station_choisie = st.sidebar.selectbox("Station", stations_list, key="corr_station")
+villes_list = ["Toutes les villes"] + sorted(df["ville"].unique().tolist())
+ville_choisie = st.sidebar.selectbox("Ville", villes_list, key="corr_station")
 
 annee_min = int(df["annee"].min())
 annee_max = int(df["annee"].max())
@@ -28,8 +29,8 @@ plage = st.sidebar.slider("Période", annee_min, annee_max, (1950, annee_max), k
 
 # Filtrage
 data = df.copy()
-if station_choisie != "Toutes les stations":
-    data = data[data["station"] == station_choisie]
+if ville_choisie != "Toutes les villes":
+    data = data[data["ville"] == ville_choisie]
 data = data[(data["annee"] >= plage[0]) & (data["annee"] <= plage[1])]
 
 cols_indicateurs = [c for c in INDICATEURS.keys() if c in data.columns]
@@ -37,7 +38,7 @@ cols_indicateurs = [c for c in INDICATEURS.keys() if c in data.columns]
 tab_matrice, tab_scatter, tab_stations = st.tabs([
     "📊 Matrice de corrélation",
     "🔍 Scatter plot",
-    "🏘️ Comparaison de stations",
+    "🏘️ Comparaison de villes",
 ])
 
 # ============================================================
@@ -114,25 +115,25 @@ with tab_scatter:
 # ONGLET 3 : COMPARAISON DE STATIONS
 # ============================================================
 with tab_stations:
-    st.markdown("Comparez jusqu'à 4 stations sur un même indicateur.")
+    st.markdown("Comparez jusqu'à 4 villes sur un même indicateur.")
 
     ind_comp = st.selectbox("Indicateur", options=cols_indicateurs,
                             format_func=lambda x: INDICATEURS[x]["nom"], key="comp_ind")
 
-    all_stations = sorted(df["station"].unique().tolist())
-    stations_choisies = st.multiselect(
-        "Stations à comparer (max 4)",
-        options=all_stations,
-        default=all_stations[:min(3, len(all_stations))],
+    all_villes = sorted(df["ville"].unique().tolist())
+    villes_choisies = st.multiselect(
+        "Villes à comparer (max 4)",
+        options=all_villes,
+        default=all_villes[:min(3, len(all_villes))],
         max_selections=4,
     )
 
-    if stations_choisies:
+    if villes_choisies:
         fig_comp = go.Figure()
 
         colors = ["#FF6B35", "#3B82F6", "#10B981", "#F59E0B"]
-        for i, station in enumerate(stations_choisies):
-            data_st = df[(df["station"] == station) &
+        for i, ville in enumerate(villes_choisies):
+            data_st = df[(df["ville"] == ville) &
                          (df["annee"] >= plage[0]) & (df["annee"] <= plage[1])]
             moy_st = data_st.groupby("annee")[ind_comp].mean().reset_index().dropna()
 
@@ -141,7 +142,7 @@ with tab_stations:
 
             fig_comp.add_trace(go.Scatter(
                 x=moy_st["annee"], y=moy_st["rolling"],
-                mode="lines", name=station,
+                mode="lines", name=ville,
                 line=dict(color=colors[i % len(colors)], width=2),
             ))
 
@@ -153,4 +154,9 @@ with tab_stations:
         )
         st.plotly_chart(fig_comp, use_container_width=True)
     else:
-        st.info("Sélectionnez au moins une station.")
+        st.info("Sélectionnez au moins une ville.")
+
+# ============================================================
+# FOOTER ÉQUIPE
+# ============================================================
+afficher_footer()

@@ -7,6 +7,7 @@ import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.data_loader import charger_donnees, get_moyennes_annuelles, INDICATEURS
+from utils.footer import afficher_footer
 
 # ============================================================
 # PAGE : PRÉDICTIONS IA (Prophet + ARIMA + fallback linéaire)
@@ -27,8 +28,8 @@ indicateur_choisi = st.sidebar.selectbox(
 
 horizon = st.sidebar.selectbox("Horizon", options=[2030, 2050, 2100], index=1)
 
-stations_list = ["Toutes les stations"] + sorted(df["station"].unique().tolist())
-station_choisie = st.sidebar.selectbox("Station", stations_list)
+villes_list = ["Toutes les villes"] + sorted(df["ville"].unique().tolist())
+ville_choisie = st.sidebar.selectbox("Ville", villes_list)
 
 modeles_actifs = st.sidebar.multiselect(
     "Modèles à comparer",
@@ -37,7 +38,7 @@ modeles_actifs = st.sidebar.multiselect(
 )
 
 # --- Données ---
-moyennes = get_moyennes_annuelles(df, indicateur_choisi, station_choisie)
+moyennes = get_moyennes_annuelles(df, indicateur_choisi, ville_choisie)
 moyennes = moyennes[moyennes["annee"] >= 1950]
 
 if moyennes.empty or len(moyennes) < 10:
@@ -150,7 +151,7 @@ for a_repere in [2030, 2050, 2100]:
                       annotation_text=str(a_repere))
 
 fig.update_layout(
-    title=f"Comparaison des modèles — {info['nom']} ({station_choisie})",
+    title=f"Comparaison des modèles — {info['nom']} ({ville_choisie})",
     xaxis_title="Année", yaxis_title=f"{info['nom']} ({info['unite']})",
     height=550, hovermode="x unified", template="plotly_dark",
     legend=dict(orientation="h", yanchor="bottom", y=1.02),
@@ -194,3 +195,8 @@ if resultats:
 
     csv = df_tableau.to_csv(index=False).encode("utf-8")
     st.download_button("📥 Exporter les prédictions", csv, "predictions_climatiques.csv", "text/csv")
+
+# ============================================================
+# FOOTER ÉQUIPE
+# ============================================================
+afficher_footer()

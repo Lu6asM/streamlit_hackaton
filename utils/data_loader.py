@@ -45,12 +45,15 @@ def charger_donnees():
     df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
     df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
 
+    # Renommer station → ville pour plus de clarté
+    df.rename(columns={"station": "ville"}, inplace=True)
+
     return df
 
 
 def get_stations(df):
     """Retourne la liste des stations uniques avec leurs coordonnées."""
-    stations = df.groupby("station").agg(
+    stations = df.groupby("ville").agg(
         latitude=("latitude", "first"),
         longitude=("longitude", "first"),
         nb_mesures=("date", "count")
@@ -61,8 +64,8 @@ def get_stations(df):
 def get_moyennes_annuelles(df, indicateur, station=None):
     """Calcule les moyennes annuelles d'un indicateur, optionnellement pour une station."""
     data = df.copy()
-    if station and station != "Toutes les stations":
-        data = data[data["station"] == station]
+    if station and station != "Toutes les villes":
+        data = data[data["ville"] == station]
 
     moyennes = data.groupby("annee")[indicateur].mean().reset_index()
     moyennes.columns = ["annee", indicateur]
