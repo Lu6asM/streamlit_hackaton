@@ -21,7 +21,7 @@ df = charger_donnees()
 # On propose toutes les colonnes numériques
 colonnes_numeriques = df.select_dtypes(include=[np.number]).columns.tolist()
 # Exclure les colonnes techniques
-colonnes_exclues = ["annee_mois", "code_station"]
+colonnes_exclues = ["annee_mois", "code_station", "annee", "mois"]
 colonnes_dispo = [c for c in colonnes_numeriques if c not in colonnes_exclues]
 
 # Labels lisibles pour les colonnes connues

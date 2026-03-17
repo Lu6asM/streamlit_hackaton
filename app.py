@@ -16,7 +16,6 @@ from utils.footer import afficher_footer
 # PAGE D'ACCUEIL
 # ============================================================
 st.markdown("# 🌍 Observatoire du Changement Climatique")
-st.markdown("### Loire-Atlantique (44) — Données Météo-France de 1900 à 2026")
 
 # KPI rapides
 from utils.data_loader import charger_donnees, INDICATEURS
@@ -64,7 +63,7 @@ with nav1:
     st.page_link("pages/1_🗺️_Carte_Interactive.py", label="Carte Interactive", icon="🗺️")
     st.page_link("pages/2_📊_Historique.py", label="Visualisations Historiques", icon="📊")
 with nav2:
-    st.page_link("pages/3_🤖_Predictions.py", label="Prédictions IA", icon="🤖")
+    st.page_link("pages/3_🔮_Predictions.py", label="Prédictions IA", icon="🤖")
     st.page_link("pages/4_💡_Preconisations.py", label="Préconisations", icon="💡")
 with nav3:
     st.page_link("pages/5_🔗_Correlations.py", label="Corrélations", icon="🔗")
@@ -97,5 +96,6 @@ with col_intro2:
 
 st.markdown("---")
 
+st.caption("Loire-Atlantique (44) — Données Météo-France de 1900 à 2026")
 
 afficher_footer()

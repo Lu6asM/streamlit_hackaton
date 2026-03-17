@@ -12,7 +12,7 @@ from utils.footer import afficher_footer
 # ============================================================
 # PAGE : PRÉDICTIONS IA (Prophet + ARIMA + fallback linéaire)
 # ============================================================
-st.title("🤖 Prédictions IA")
+st.title("🔮 Prédictions IA")
 st.markdown("Projections climatiques basées sur les données historiques — Prophet, ARIMA et régression.")
 
 df = charger_donnees()
