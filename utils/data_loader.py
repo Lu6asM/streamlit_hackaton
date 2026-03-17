@@ -20,9 +20,14 @@ INDICATEURS = {
 @st.cache_data
 def charger_donnees():
     """Charge et nettoie le CSV météo Loire-Atlantique."""
-    # Chemin relatif au dossier streamlit_app
-    csv_path = os.path.join(os.path.dirname(__file__), "..", "..", "meteo_44_1900_2026.csv")
-    csv_path = os.path.normpath(csv_path)
+    # Essai local d'abord, sinon GitHub raw
+    csv_local = os.path.join(os.path.dirname(__file__), "..", "data", "meteo_44_1900_2026.csv")
+    csv_local = os.path.normpath(csv_local)
+
+    if os.path.exists(csv_local):
+        csv_path = csv_local
+    else:
+        csv_path = "https://raw.githubusercontent.com/Lu6asM/streamlit_hackaton/refs/heads/main/data/meteo_44_1900_2026.csv"
 
     df = pd.read_csv(csv_path, sep=";", low_memory=False)
 
